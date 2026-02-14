@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17.4
+    restart: always
+    ports:
+      - "5431:5432"
+    environment: 
+      POSTGRES_DB: todo-drizzle
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Q1e2r3s4$"
+    volumes: 
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
