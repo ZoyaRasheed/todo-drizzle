@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import './App.css';
 import './index.css';
 import {
     getAllTodos,
@@ -152,56 +151,63 @@ function App() {
     };
 
     return (
-        <div className="app">
-            <div className="app-container">
-                <Header />
+        <div className="
+            relative w-full max-w-3xl min-h-[80vh] p-8 pl-14 sm:pl-20 
+            bg-paper-bg rounded-sm shadow-[0_1px_4px_rgba(0,0,0,0.1),0_0_40px_rgba(0,0,0,0.1)_inset]
+            bg-[linear-gradient(90deg,transparent_59px,var(--color-margin-line)_59px,transparent_60px),linear-gradient(var(--color-paper-line)_1px,transparent_1px)]
+            bg-[size:100%_100%,100%_2.5rem] bg-local leading-10
+            before:content-[''] before:absolute before:top-0 before:left-5 before:h-full before:w-[10px] 
+            before:bg-[radial-gradient(#333_30%,transparent_31%)] before:bg-[size:10px_2.5rem] before:bg-[position:0_1rem] before:opacity-60
+        ">
+            <Header />
 
+            <div className="mb-6">
                 <TodoForm onAdd={handleAddTodo} />
-
-                <ErrorMessage message={error} />
-
-                <div className="controls-section">
-                    <TodoFilter
-                        searchQuery={searchQuery}
-                        setSearchQuery={setSearchQuery}
-                        filter={filter}
-                        setFilter={setFilter}
-                        stats={stats}
-                    />
-                </div>
-
-                <TodoList
-                    todos={paginatedTodos}
-                    loading={loading}
-                    filter={filter}
-                    searchQuery={searchQuery}
-                    onToggle={handleToggleStatus}
-                    onDelete={handleDeleteTodo}
-                    onUpdate={handleUpdateTodo}
-                />
-
-                {!searchQuery && totalPages > 1 && (
-                    <div className="pagination">
-                        <button
-                            className="pagination-btn"
-                            disabled={page === 1}
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                        >
-                            Previous
-                        </button>
-                        <span className="mono text-sm">
-                            Page {page} of {totalPages}
-                        </span>
-                        <button
-                            className="pagination-btn"
-                            disabled={page === totalPages}
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        >
-                            Next
-                        </button>
-                    </div>
-                )}
             </div>
+
+            <ErrorMessage message={error} />
+
+            <div className="mb-4">
+                <TodoFilter
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    filter={filter}
+                    setFilter={setFilter}
+                    stats={stats}
+                />
+            </div>
+
+            <TodoList
+                todos={paginatedTodos}
+                loading={loading}
+                filter={filter}
+                searchQuery={searchQuery}
+                onToggle={handleToggleStatus}
+                onDelete={handleDeleteTodo}
+                onUpdate={handleUpdateTodo}
+            />
+
+            {!searchQuery && totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-8 font-kalam">
+                    <button
+                        className="px-4 py-1 border-2 border-ink-blue rounded-full hover:bg-ink-blue/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        disabled={page === 1}
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                    >
+                        Previous
+                    </button>
+                    <span className="text-lg">
+                        Page {page} of {totalPages}
+                    </span>
+                    <button
+                        className="px-4 py-1 border-2 border-ink-blue rounded-full hover:bg-ink-blue/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        disabled={page === totalPages}
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
