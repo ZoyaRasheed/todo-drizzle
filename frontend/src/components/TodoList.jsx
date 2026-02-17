@@ -2,11 +2,11 @@ import React from 'react';
 import TodoItem from './TodoItem';
 import EmptyState from './EmptyState';
 
-const TodoList = ({ todos, loading, filter, searchQuery, onToggle, onDelete, onUpdate }) => {
+    const TodoList = ({ todos, loading, filter, searchQuery, onToggle, onDelete, onUpdate }) => {
     if (loading) {
         return (
-            <div className="loading-container">
-                <div className="spinner"></div>
+            <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ink-blue"></div>
             </div>
         );
     }
@@ -16,8 +16,8 @@ const TodoList = ({ todos, loading, filter, searchQuery, onToggle, onDelete, onU
     }
 
     return (
-        <div className="todos-section">
-            <div className="todos-list">
+        <div className="mt-6">
+            <ul className="flex flex-col">
                 {todos.map((todo) => (
                     <TodoItem
                         key={todo.id}
@@ -27,7 +27,7 @@ const TodoList = ({ todos, loading, filter, searchQuery, onToggle, onDelete, onU
                         onUpdate={onUpdate}
                     />
                 ))}
-            </div>
+            </ul>
         </div>
     );
 };
