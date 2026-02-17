@@ -1,31 +1,30 @@
 import React, { useState } from 'react';
 
 const TodoForm = ({ onAdd }) => {
-    const [newTodo, setNewTodo] = useState('');
+    const [description, setDescription] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!newTodo.trim()) return;
-        onAdd(e, newTodo);
-        setNewTodo('');
+        if (!description.trim()) return;
+        onAdd(e, description);
+        setDescription('');
     };
 
     return (
-        <section className="add-todo-section">
-            <form onSubmit={handleSubmit} className="add-todo-form glass">
+        <div className="add-todo-section">
+            <form className="add-todo-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
                     className="add-todo-input"
-                    placeholder="What needs to be done?"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
+                    placeholder="Add a new task... (Press Enter)"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                 />
                 <button type="submit" className="btn btn-primary">
-                    <span>Add Todo</span>
-                    <span>+</span>
+                    Add
                 </button>
             </form>
-        </section>
+        </div>
     );
 };
 

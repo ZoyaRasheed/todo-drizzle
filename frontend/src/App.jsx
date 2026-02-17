@@ -22,14 +22,14 @@ function App() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
-    const ITEMS_PER_PAGE = 4;
+    const ITEMS_PER_PAGE = 10; // Increased for dense list view
 
     // Fetch todos on mount
     useEffect(() => {
         if (!searchQuery.trim()) {
             fetchTodos();
         }
-    }, []); // Only fetch on mount, not on page change (client-side pagination)
+    }, []);
 
     // Handle search
     useEffect(() => {
@@ -39,7 +39,7 @@ function App() {
             } else {
                 fetchTodos();
             }
-        }, 500);
+        }, 300); // Faster debounce for "instant" feel
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
@@ -49,8 +49,6 @@ function App() {
             setLoading(true);
             setError(null);
             const response = await getAllTodos();
-
-            // Handle different potential response structures safely
             if (Array.isArray(response)) {
                 setTodos(response);
             } else if (response && response.data && Array.isArray(response.data)) {
@@ -58,9 +56,8 @@ function App() {
             } else {
                 setTodos([]);
             }
-
         } catch (err) {
-            setError('Failed to fetch todos. Please make sure the backend is running on port 3000.');
+            setError('Could not connect to server.');
             console.error('Error fetching todos:', err);
         } finally {
             setLoading(false);
@@ -71,11 +68,10 @@ function App() {
         try {
             setError(null);
             await addTodo(description);
-            // Reset to first page to see new item
             setPage(1);
             fetchTodos();
         } catch (err) {
-            setError('Failed to add todo. Please try again.');
+            setError('Failed to create item.');
             console.error('Error adding todo:', err);
         }
     };
@@ -84,10 +80,9 @@ function App() {
         try {
             setError(null);
             await deleteTodo(id);
-            // Refresh current page
             fetchTodos();
         } catch (err) {
-            setError('Failed to delete todo. Please try again.');
+            setError('Failed to delete item.');
             console.error('Error deleting todo:', err);
         }
     };
@@ -106,12 +101,9 @@ function App() {
         try {
             setError(null);
             await toggleTodoStatus(id);
-            // No need to fetchTodos here as we already updated visually.
-            // But we can fetch silently in background if needed to ensure sync.
         } catch (err) {
-            setError('Failed to update status. Please try again.');
-            console.error('Error toggling status:', err);
-            fetchTodos(); // Revert on error
+            setError('Sync failed.');
+            fetchTodos();
         }
     };
 
@@ -121,10 +113,8 @@ function App() {
             setError(null);
             const response = await searchTodos(searchQuery);
             setTodos(response.data || []);
-            // Hide pagination during search or handle search pagination if backend supports it
             setPage(1);
         } catch (err) {
-            setError('Search failed. Please try again.');
             console.error('Error searching todos:', err);
         } finally {
             setLoading(false);
@@ -137,19 +127,18 @@ function App() {
             await updateTodo(id, newDescription);
             fetchTodos();
         } catch (err) {
-            setError('Failed to update todo. Please try again.');
-            console.error('Error updating todo:', err);
+            setError('Update failed.');
         }
     };
 
-    // Filter todos based on status
+    // Filter todos
     const filteredTodos = todos.filter((todo) => {
         if (filter === 'pending') return todo.status === 'pending';
         if (filter === 'completed') return todo.status === 'completed';
-        return true; // 'all'
+        return true;
     });
 
-    // Calculate pagination
+    // Pagination
     const totalPages = Math.ceil(filteredTodos.length / ITEMS_PER_PAGE) || 1;
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
     const paginatedTodos = searchQuery
@@ -171,13 +160,15 @@ function App() {
 
                 <ErrorMessage message={error} />
 
-                <TodoFilter
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    filter={filter}
-                    setFilter={setFilter}
-                    stats={stats}
-                />
+                <div className="controls-section">
+                    <TodoFilter
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        filter={filter}
+                        setFilter={setFilter}
+                        stats={stats}
+                    />
+                </div>
 
                 <TodoList
                     todos={paginatedTodos}
@@ -189,7 +180,6 @@ function App() {
                     onUpdate={handleUpdateTodo}
                 />
 
-                {/* Pagination Controls */}
                 {!searchQuery && totalPages > 1 && (
                     <div className="pagination">
                         <button
@@ -199,7 +189,7 @@ function App() {
                         >
                             Previous
                         </button>
-                        <span className="pagination-info">
+                        <span className="mono text-sm">
                             Page {page} of {totalPages}
                         </span>
                         <button

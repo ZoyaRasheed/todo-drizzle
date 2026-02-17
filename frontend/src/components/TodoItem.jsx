@@ -1,95 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 const TodoItem = ({ todo, onToggle, onDelete, onUpdate }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [editText, setEditText] = useState(todo.description || todo.descrption); // Handle potential typo in data if any
+    const [editValue, setEditValue] = useState(todo.description);
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (isEditing) {
+            inputRef.current?.focus();
+        }
+    }, [isEditing]);
 
     const handleUpdate = () => {
-        if (!editText.trim()) {
-            handleCancel();
-            return;
+        if (editValue.trim() !== todo.description) {
+            onUpdate(todo.id, editValue);
         }
-        onUpdate(todo.id, editText);
         setIsEditing(false);
-    };
-
-    const handleCancel = () => {
-        setIsEditing(false);
-        setEditText(todo.description || todo.descrption);
     };
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleUpdate();
         } else if (e.key === 'Escape') {
-            handleCancel();
+            setEditValue(todo.description);
+            setIsEditing(false);
         }
     };
 
     return (
-        <div className={`todo-item glass ${todo.status === 'completed' ? 'completed' : ''}`}>
+        <div className={`todo-item ${todo.status === 'completed' ? 'completed' : ''}`}>
 
+            {/* Custom Checkbox - CSS handles the look */}
+            <div
+                className={`status-badge ${todo.status}`}
+                onClick={() => onToggle(todo.id)}
+                title={`Mark as ${todo.status === 'completed' ? 'pending' : 'completed'}`}
+            >
+                {/* No text, just the box */}
+            </div>
 
+            {/* Content */}
             <div className="todo-content">
                 {isEditing ? (
                     <input
+                        ref={inputRef}
                         type="text"
                         className="todo-description editing"
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleUpdate}
                         onKeyDown={handleKeyDown}
-                        autoFocus
                     />
                 ) : (
-                    <p className="todo-description">
-                        {todo.description || todo.descrption}
-                    </p>
+                    <span
+                        className="todo-description"
+                        onDoubleClick={() => setIsEditing(true)}
+                        title="Double click to edit"
+                    >
+                        {todo.description}
+                    </span>
                 )}
             </div>
 
+            {/* Actions - Scribbly Buttons */}
             <div className="todo-actions">
-                <span
-                    className={`status-badge ${todo.status ? todo.status.toLowerCase() : 'pending'}`}
-                    onClick={() => onToggle(todo.id)}
-                    style={{ cursor: 'pointer' }}
-                    title="Click to toggle status"
+                <button
+                    className="btn-icon"
+                    onClick={() => setIsEditing(!isEditing)}
+                    aria-label="Edit"
                 >
-                    <span className="status-dot"></span>
-                    {todo.status || 'Pending'}
-                </span>
-                {isEditing ? (
-                    <>
-                        <button
-                            className="btn btn-sm btn-success"
-                            onClick={handleUpdate}
-                        >
-                            Save
-                        </button>
-                        <button
-                            className="btn btn-sm btn-icon"
-                            onClick={handleCancel}
-                        >
-                            ✕
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <button
-                            className="btn btn-sm btn-icon"
-                            onClick={() => setIsEditing(true)}
-                            title="Edit"
-                        >
-                            ✏️
-                        </button>
-                        <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => onDelete(todo.id)}
-                            title="Delete"
-                        >
-                            🗑️
-                        </button>
-                    </>
-                )}
+                    ✎
+                </button>
+                <button
+                    className="btn-icon btn-danger"
+                    onClick={() => onDelete(todo.id)}
+                    aria-label="Delete"
+                >
+                    ✕
+                </button>
             </div>
         </div>
     );
