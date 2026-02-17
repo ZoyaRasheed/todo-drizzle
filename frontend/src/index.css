@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-@theme {
+/* Custom CSS variables */
+@theme{
   --font-kalam: "Kalam", cursive;
   --color-paper-bg: #fdfbf7;
   --color-ink-blue: #1a237e;
